@@ -1,6 +1,10 @@
 #ifndef _POOL_BUFFER_H
 #define _POOL_BUFFER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <cairo/cairo.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -20,4 +24,7 @@ struct pool_buffer *get_next_buffer(struct wl_shm *shm,
 	struct pool_buffer pool[static 2], uint32_t width, uint32_t height);
 void finish_buffer(struct pool_buffer *buffer);
 
+#ifdef __cplusplus
+}
+#endif
 #endif
