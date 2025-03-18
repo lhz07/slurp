@@ -86,3 +86,49 @@ void render(struct slurp_output *output) {
 		}
 	}
 }
+void render_selected(struct slurp_output *output, struct slurp_box fixed_box, char *status)
+{
+    struct slurp_state *state = output->state;
+    struct pool_buffer *buffer = output->current_buffer;
+    cairo_t *cairo = buffer->cairo;
+    if (!output->configured) {
+        return;
+    }
+
+    // Clear
+    cairo_set_operator(cairo, CAIRO_OPERATOR_SOURCE);
+    set_source_u32(cairo, state->colors.background);
+    cairo_paint(cairo);
+
+    // 直接绘制固定大小的矩形，不依赖 seat 状态
+    // struct slurp_box fixed_box = {.x = 1000, .y = 237, .width = 800, .height = 600};
+
+    // 调整到输出坐标系
+    box_layout_to_output(&fixed_box, output);
+
+    // 绘制选择区域
+    draw_rect(cairo, &fixed_box, state->colors.selection);
+    cairo_fill(cairo);
+
+    // 绘制边框
+    cairo_set_line_width(cairo, 2);           // 设置固定的边框宽度
+    draw_rect(cairo, &fixed_box, 0xFF0000FF); // 使用红色边框
+    cairo_stroke(cairo);
+
+    // 显示尺寸标签
+    cairo_select_font_face(cairo, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_set_font_size(cairo, 14);
+    set_source_u32(cairo, 0xFF0000FF); // 红色文字
+    char dimensions[32];
+    snprintf(dimensions,
+             sizeof(dimensions),
+             "%dx%d  %s",
+             fixed_box.width - 4,
+             fixed_box.height - 4,
+             status);
+    cairo_move_to(cairo, fixed_box.x, fixed_box.y - 10);
+    cairo_show_text(cairo, dimensions);
+
+    // 确保渲染生效
+    wl_surface_commit(output->surface);
+}

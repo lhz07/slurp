@@ -20,6 +20,9 @@ struct seletion_box {
 };
 
 int get_region(int argc, char *argv[], struct seletion_box *select_region, struct screen_output* screens);
+int show_selected_area(int argc, char *argv[], struct screen_box area);
+void change_running();
+void change_text(char *text);
 
 #ifdef __cplusplus
 }

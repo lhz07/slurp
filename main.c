@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <linux/input-event-codes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +10,6 @@
 #include <unistd.h>
 #include <wayland-cursor.h>
 #include <xkbcommon/xkbcommon.h>
-#include <linux/input-event-codes.h>
 
 #include "slurp.h"
 #include "slurp_tool.h"
@@ -1172,6 +1172,8 @@ int get_region(int argc, char *argv[], struct seletion_box *select_region, struc
     wl_list_for_each(output, &state.outputs, link)
     {
         output->surface = wl_compositor_create_surface(state.compositor);
+        // struct wl_region *input_region = wl_compositor_create_region(state.compositor);
+        // wl_surface_set_input_region(output->surface, input_region);
         // TODO: wl_surface_add_listener(output->surface, &surface_listener, output);
 
         output->layer_surface = zwlr_layer_shell_v1_get_layer_surface(
@@ -1207,6 +1209,7 @@ int get_region(int argc, char *argv[], struct seletion_box *select_region, struc
         }
     }
     // second roundtrip for xdg-output
+
     wl_display_roundtrip(state.display);
     bool create_seat = false;
 
